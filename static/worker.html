@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <title>Web Workers</title>
+    <style type="text/css">
+      input:focus, button:focus{
+        outline: none;
+        border: 1px solid #1EBE28;
+      }
+
+      input {
+        padding: .618em;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+      }
+
+      button {
+        color: white;
+        padding: .618em;
+        border: 1px solid #1EBE28;
+        border-radius: 3px; 
+        background: rgb(30, 190, 40);
+      }
+
+      button:hover, button:focus{
+        background: rgb(25, 158, 33);
+      }
+
+      ul {
+        overflow-y: auto;
+      }
+
+      li {
+        color: #333;
+        font-size: 14;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript">//<![CDATA[
+      var myWorker;
+      if (window.Worker) { // Check if Browser supports the Worker api.
+        // Requires script name as input
+        var myWorker = new Worker("worker.js");
+        myWorker.onmessage = function(e) {
+          addToList(e.data);
+        };
+      }
+
+      function addToList(num) {
+        var li = document.createElement('li'),
+        list = document.getElementById('primeList');
+        li.innerText = num;
+        list.appendChild(li);
+        window.scrollTo(0, list.scrollHeight);
+      }
+
+      function clearList() {
+        var list = document.getElementById('primeList');
+        list.innerHTML = '';
+      }
+
+      function primerize() {
+        clearList();
+        start = document.getElementById('primeStart').value !== null ? document.getElementById('primeStart').value : 0,
+        end = document.getElementById('primeEnd').value != null ? document.getElementById('primeEnd').value : 20;
+        if (!!myWorker) {
+          myWorker.postMessage([start, end]);
+        }
+      }
+      //]]>
+    </script>
+  </head>
+  <body>
+    <input type="number" id="primeStart" placeholder="starting number">
+    <input type="number" id="primeEnd" placeholder="ending number" />
+    <button onclick="primerize();">get Primes</button>
+    <output id="result">
+      <ul id="primeList"></ul>
+    </output>
+  </body>
+</html>
